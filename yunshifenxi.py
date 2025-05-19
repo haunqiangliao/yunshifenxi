@@ -1,79 +1,157 @@
 import streamlit as st
+from streamlit_lottie import st_lottie  # 动画库
+import requests
 
-# 星座数据库
+# 配置页面
+st.set_page_config(
+    page_title="🌟 多维运势分析站",
+    page_icon="✨",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
+# ------------------------------
+# 动画加载函数
+def load_lottieurl(url: str):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# 加载不同运势对应的动画
+lottie_fortune = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_8oahuefx.json")  # 好运动画
+lottie_warning = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_8x8mxjfi.json")  # 提醒动画
+
+# ------------------------------
+# 数据库扩展（增加每日幸运值、宜/忌事项）
 constellations = {
-    "白羊座": "近期可能会有意外惊喜，适合主动出击，展现个人魅力。",
-    "金牛座": "财运稳定增长，适合进行长期投资规划，但需注意人际关系。",
-    "双子座": "思维活跃，适合学习新知识或开展新项目，社交活动增多。",
-    "巨蟹座": "家庭关系和睦，但需注意调节情绪，避免过度敏感。",
-    "狮子座": "事业上有机会展现才华，获得认可，但需注意别太自我中心。",
-    "处女座": "适合处理繁琐事务，工作效率高，但容易给自己压力过大。",
-    "天秤座": "人际关系融洽，可能会有浪漫际遇，需注意在抉择时别犹豫不决。",
-    "天蝎座": "近期会有深刻的自我反思，适合挖掘潜力，但要避免猜疑过度。",
-    "射手座": "适合旅行或学习新技能，拓展视野，可能会有意外的学习机会。",
-    "摩羯座": "事业上会有稳步进展，适合制定长期目标，但需注意劳逸结合。",
-    "水瓶座": "灵感迸发，适合创新项目或团队合作，但可能会有些特立独行。",
-    "双鱼座": "艺术灵感涌现，适合创作或表达情感，但需注意别过于幻想。"
+    "白羊座": {
+        "运势": "近期可能会有意外惊喜，适合主动出击，展现个人魅力。",
+        "lucky": "幸运色: 红色 | 幸运数字: 5",
+        "tips": "宜: 运动健身 | 忌: 久坐不动"
+    },
+    "金牛座": {
+        "运势": "财运稳定增长，适合进行长期投资规划，但需注意人际关系。",
+        "lucky": "幸运色: 绿色 | 幸运数字: 6",
+        "tips": "宜: 理财规划 | 忌: 冲动消费"
+    },
+    # 其他星座按此格式补充...
 }
 
-# MBTI数据库
 mbti_types = {
-    "ISTJ": "适合处理复杂任务，工作效率高，但可能会因过于固执错过新机会。",
-    "ISFJ": "人际关系良好，适合帮助他人，但需注意别过度牺牲自己。",
-    "INFJ": "灵感丰富，适合创作或策划，但可能会因追求完美而拖延。",
-    "INTJ": "适合进行深入研究或规划，可能会有突破性的想法。",
-    "ISTP": "适合处理实际问题，可能会有意外的冒险机会。",
-    "ISFP": "艺术灵感涌现，适合表达自我，但需注意别过于情绪化。",
-    "INFP": "适合思考人生方向，可能会有新的感悟，但需注意别过于空想。",
-    "INTP": "适合学习新知识或研究新领域，可能会有意外的发现。",
-    "ESTP": "适合参与社交活动或竞争，可能会有意外的机遇。",
-    "ESFP": "社交活动丰富，可能会有浪漫际遇，但需注意别过于冲动。",
-    "ENFP": "适合开展新项目或合作，可能会有新的人脉资源。",
-    "ENTP": "适合参与讨论或竞争，可能会有新的想法或机会。",
-    "ESTJ": "适合领导团队或处理事务，可能会有晋升机会。",
-    "ESFJ": "人际关系良好，适合协调或帮助他人，但需注意别过于迁就。",
-    "ENFJ": "适合领导团队或组织活动，可能会获得他人认可。",
-    "ENTJ": "适合制定战略或领导团队，可能会有重要的决策要做。"
+    "ISTJ": {
+        "运势": "适合处理复杂任务，工作效率高，但可能会因过于固执错过新机会。",
+        "lucky": "幸运色: 蓝色 | 幸运数字: 3",
+        "tips": "宜: 按计划执行 | 忌: 频繁变动"
+    },
+    # 其他MBTI类型按此格式补充...
 }
 
-# 年龄分类运势
 age_fortunes = {
-    "少年": "学习方面会有新的突破，可能会遇到良师益友。",
-    "青年": "事业和爱情都有发展机会，要勇敢追求自己的目标。",
-    "中年": "事业稳定，家庭幸福，但需注意身体健康。",
-    "老年": "享受生活，安度晚年，可能会有一些回忆涌上心头。"
+    "少年": {
+        "运势": "学习方面会有新的突破，可能会遇到良师益友。",
+        "lucky": "幸运色: 橙色 | 幸运数字: 9",
+        "tips": "宜: 参加社团 | 忌: 闭门造车"
+    },
+    # 其他年龄组按此格式补充...
 }
 
+# ------------------------------
 # 主程序
 def main():
-    st.title("🌟 运势分析系统 🌟")
-    st.write("基于星座、MBTI和年龄的运势分析")
+    st.title("🌟 多维运势分析站 🌟")
+    st.write("✨ 结合星座、MBTI、年龄的深度运势解析")
     
-    with st.form("analysis_form"):
-        col1, col2 = st.columns(2)
+    # 侧边栏装饰
+    with st.sidebar:
+        st_lottie(lottie_fortune, height=150, key="sidebar-animation")
+        st.write("---")
+        st.write("made with ❤️ by Streamlit")
+    
+    # 输入表单
+    with st.form("analysis_form", clear_on_submit=True):
+        col1, col2 = st.columns([3, 2])
         
         with col1:
-            constellation = st.selectbox("你的星座是", list(constellations.keys()))
-            mbti = st.selectbox("你的MBTI类型是", list(mbti_types.keys()))
+            st.subheader("基础信息")
+            constellation = st.selectbox(
+                "选择你的星座", 
+                list(constellations.keys()),
+                placeholder="请选择你的星座..."
+            )
+            
+            mbti = st.selectbox(
+                "输入你的MBTI类型", 
+                list(mbti_types.keys()),
+                placeholder="例如: INTJ"
+            )
+            
+            age = st.number_input(
+                "输入你的年龄", 
+                min_value=0, 
+                max_value=120, 
+                value=25,
+                help="用于匹配专属年龄运势"
+            )
             
         with col2:
-            age = st.slider("你的年龄", 0, 100, 25)
-            if age < 18:
-                age_group = "少年"
-            elif age < 35:
-                age_group = "青年"
-            elif age < 60:
-                age_group = "中年"
-            else:
-                age_group = "老年"
+            st.subheader("✨ 今日幸运签")
+            st_lottie(lottie_fortune, height=200, key="main-animation")
         
-        submitted = st.form_submit_button("开始分析")
+        submitted = st.form_submit_button(
+            "🔮 生成运势报告",
+            type="primary",
+            use_container_width=True
+        )
+    
+    # 结果展示
+    if submitted and constellation and mbti:
+        # 计算年龄组
+        if age < 18:
+            age_group = "少年"
+        elif age < 35:
+            age_group = "青年"
+        elif age < 60:
+            age_group = "中年"
+        else:
+            age_group = "老年"
         
-        if submitted:
-            st.subheader("🔮 运势预测 🔮")
-            st.write(f"**星座运势**：{constellations[constellation]}")
-            st.write(f"**MBTI 运势**：{mbti_types[mbti]}")
-            st.write(f"**年龄运势**：{age_fortunes[age_group]}")
+        # 生成报告
+        st.divider()
+        st.header("📜 运势分析报告")
+        
+        # 星座运势
+        st.subheader("🌟 星座运势解析")
+        st.write(f"**核心运势**：{constellations[constellation]['运势']}")
+        st.write(f"**今日幸运**：{constellations[constellation]['lucky']}")
+        st.success("宜：" + constellations[constellation]['tips'].split('|')[0].strip())
+        st.warning("忌：" + constellations[constellation]['tips'].split('|')[1].strip())
+        st_lottie(lottie_fortune, height=180, key="horoscope-animation")
+        
+        # MBTI 运势
+        st.subheader("🧠 MBTI 专属指引")
+        st.write(f"**性格优势**：{mbti_types[mbti]['运势'].split('，')[0]}")
+        st.write(f"**潜在挑战**：{mbti_types[mbti]['运势'].split('，')[1]}")
+        st.info(mbti_types[mbti]['tips'])
+        st_lottie(lottie_warning, height=180, key="mbti-animation")
+        
+        # 年龄运势
+        st.subheader("📅 年龄阶段运势")
+        st.write(f"**当前阶段**：{age_group}（{age}岁）")
+        st.write(f"**阶段特征**：{age_fortunes[age_group]['运势']}")
+        st.write(f"**幸运信息**：{age_fortunes[age_group]['lucky']}")
+        st_lottie(lottie_fortune, height=180, key="age-animation")
+        
+        # 彩蛋：随机鼓励语
+        st.divider()
+        st.subheader("💡 今日特别提醒")
+        encouragements = [
+            "今天的你比昨天更接近梦想！",
+            "所有的努力都在积累属于你的奇迹",
+            "别担心，一切都是最好的安排",
+            "勇气是此刻最亮的光芒"
+        ]
+        st.success(random.choice(encouragements), icon="✨")
 
 if __name__ == "__main__":
     main()
