@@ -1,6 +1,7 @@
 import streamlit as st
-from streamlit_lottie import st_lottie  # 动画库
+from streamlit_lottie import st_lottie
 import requests
+import random
 
 # 配置页面
 st.set_page_config(
@@ -23,7 +24,7 @@ lottie_fortune = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_8
 lottie_warning = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_8x8mxjfi.json")  # 提醒动画
 
 # ------------------------------
-# 数据库扩展（增加每日幸运值、宜/忌事项）
+# 数据库扩展
 constellations = {
     "白羊座": {
         "运势": "近期可能会有意外惊喜，适合主动出击，展现个人魅力。",
@@ -35,7 +36,7 @@ constellations = {
         "lucky": "幸运色: 绿色 | 幸运数字: 6",
         "tips": "宜: 理财规划 | 忌: 冲动消费"
     },
-    # 其他星座按此格式补充...
+    # 其他星座数据...
 }
 
 mbti_types = {
@@ -44,7 +45,7 @@ mbti_types = {
         "lucky": "幸运色: 蓝色 | 幸运数字: 3",
         "tips": "宜: 按计划执行 | 忌: 频繁变动"
     },
-    # 其他MBTI类型按此格式补充...
+    # 其他MBTI类型数据...
 }
 
 age_fortunes = {
@@ -53,7 +54,7 @@ age_fortunes = {
         "lucky": "幸运色: 橙色 | 幸运数字: 9",
         "tips": "宜: 参加社团 | 忌: 闭门造车"
     },
-    # 其他年龄组按此格式补充...
+    # 其他年龄组数据...
 }
 
 # ------------------------------
@@ -86,11 +87,13 @@ def main():
                 placeholder="例如: INTJ"
             )
             
+            # 年龄改为数字输入框
             age = st.number_input(
                 "输入你的年龄", 
                 min_value=0, 
                 max_value=120, 
                 value=25,
+                step=1,
                 help="用于匹配专属年龄运势"
             )
             
