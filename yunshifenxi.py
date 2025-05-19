@@ -1,6 +1,4 @@
 import streamlit as st
-from streamlit_lottie import st_lottie
-import requests
 import random
 
 # 配置页面
@@ -11,19 +9,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------------------
-# 动画加载函数
-def load_lottieurl(url: str):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
-
-# 加载不同运势对应的动画
-lottie_fortune = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_8oahuefx.json")  # 好运动画
-lottie_warning = load_lottieurl("https://assets1.lottiefiles.com/packages/lf20_8x8mxjfi.json")  # 提醒动画
-
-# ------------------------------
 # 数据库扩展
 constellations = {
     "白羊座": {
@@ -57,15 +42,13 @@ age_fortunes = {
     # 其他年龄组数据...
 }
 
-# ------------------------------
 # 主程序
 def main():
     st.title("🌟 多维运势分析站 🌟")
     st.write("✨ 结合星座、MBTI、年龄的深度运势解析")
     
-    # 侧边栏装饰
+    # 侧边栏装饰（简化）
     with st.sidebar:
-        st_lottie(lottie_fortune, height=150, key="sidebar-animation")
         st.write("---")
         st.write("made with ❤️ by Streamlit")
     
@@ -99,7 +82,7 @@ def main():
             
         with col2:
             st.subheader("✨ 今日幸运签")
-            st_lottie(lottie_fortune, height=200, key="main-animation")
+            # 移除动画相关代码
         
         submitted = st.form_submit_button(
             "🔮 生成运势报告",
@@ -129,21 +112,18 @@ def main():
         st.write(f"**今日幸运**：{constellations[constellation]['lucky']}")
         st.success("宜：" + constellations[constellation]['tips'].split('|')[0].strip())
         st.warning("忌：" + constellations[constellation]['tips'].split('|')[1].strip())
-        st_lottie(lottie_fortune, height=180, key="horoscope-animation")
         
         # MBTI 运势
         st.subheader("🧠 MBTI 专属指引")
         st.write(f"**性格优势**：{mbti_types[mbti]['运势'].split('，')[0]}")
         st.write(f"**潜在挑战**：{mbti_types[mbti]['运势'].split('，')[1]}")
         st.info(mbti_types[mbti]['tips'])
-        st_lottie(lottie_warning, height=180, key="mbti-animation")
         
         # 年龄运势
         st.subheader("📅 年龄阶段运势")
         st.write(f"**当前阶段**：{age_group}（{age}岁）")
         st.write(f"**阶段特征**：{age_fortunes[age_group]['运势']}")
         st.write(f"**幸运信息**：{age_fortunes[age_group]['lucky']}")
-        st_lottie(lottie_fortune, height=180, key="age-animation")
         
         # 彩蛋：随机鼓励语
         st.divider()
